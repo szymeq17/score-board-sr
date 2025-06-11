@@ -70,6 +70,9 @@ class ScoreBoardServiceImplTest {
     @ParameterizedTest
     @MethodSource("provideIncorrectTeams")
     void shouldThrowExceptionWhileStartingAGameWhenIncorrectTeams(Team homeTeam, Team awayTeam) {
+        //given
+        //when
+        //then
         assertThrows(GameRulesViolationException.class, () -> sut.startGame(homeTeam, awayTeam));
     }
 
@@ -161,6 +164,17 @@ class ScoreBoardServiceImplTest {
         assertThrows(GameNotFoundException.class, () -> sut.updateScore(gameId, newScore));
     }
 
+    @ParameterizedTest
+    @MethodSource("provideIncorrectScores")
+    void shouldThrowExceptionWhileUpdatingScoreWhenScoreIsIncorrect(Score score) {
+        //given
+        var gameId = UUID.randomUUID();
+
+        //when
+        //then
+        assertThrows(GameRulesViolationException.class, () -> sut.updateScore(gameId, score));
+    }
+
     @Test
     void shouldReturnGamesInSummaryInCorrectOrder() {
         //given
@@ -196,6 +210,14 @@ class ScoreBoardServiceImplTest {
                 Arguments.of(new Team("Poland"), new Team("Poland")),
                 Arguments.of(new Team(""), new Team("Poland")),
                 Arguments.of(new Team("Poland"), new Team(""))
+        );
+    }
+
+    private static Stream<Arguments> provideIncorrectScores() {
+        return Stream.of(
+                Arguments.of(new Score(-2, 0)),
+                Arguments.of(new Score(0, -1)),
+                Arguments.of(new Score(-5, -3))
         );
     }
 }
