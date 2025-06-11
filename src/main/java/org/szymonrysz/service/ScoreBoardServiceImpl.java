@@ -39,6 +39,7 @@ public class ScoreBoardServiceImpl implements ScoreBoardService {
 
     @Override
     public void finishGame(UUID gameId) {
+        gameRepository.findById(gameId).orElseThrow(() -> new GameNotFoundException(gameId));
         gameRepository.deleteById(gameId);
     }
 

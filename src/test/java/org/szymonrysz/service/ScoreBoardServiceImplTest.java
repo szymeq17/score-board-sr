@@ -104,12 +104,24 @@ class ScoreBoardServiceImplTest {
     void shouldFinishAGame() {
         //given
         var gameId = UUID.randomUUID();
+        when(gameRepository.findById(gameId)).thenReturn(Optional.of(Game.builder().build()));
 
         //when
         sut.finishGame(gameId);
 
         //then
         verify(gameRepository).deleteById(gameId);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenFinishigANonExistingGame() {
+        //given
+        var gameId = UUID.randomUUID();
+        when(gameRepository.findById(gameId)).thenReturn(Optional.empty());
+
+        //when
+        //then
+        assertThrows(GameNotFoundException.class, () -> sut.finishGame(gameId));
     }
 
     @Test
@@ -138,7 +150,7 @@ class ScoreBoardServiceImplTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenGameDoesNotExist() {
+    void shouldThrowExceptionWhileUpdatingScoreWhenGameDoesNotExist() {
         //given
         var gameId = UUID.randomUUID();
         var newScore = new Score(1, 0);
