@@ -47,9 +47,11 @@ class ScoreBoardServiceImplTest {
         //given
         var homeTeam = new Team("Poland");
         var awayTeam = new Team("Germany");
+        var gameFromRepository = Game.builder().build();
         when(clock.instant()).thenReturn(Instant.MIN);
         when(gameRepository.existsByTeamName("Poland")).thenReturn(false);
         when(gameRepository.existsByTeamName("Germany")).thenReturn(false);
+        when(gameRepository.save(any(Game.class))).thenReturn(gameFromRepository);
 
         //when
         var result = sut.startGame(homeTeam, awayTeam);
@@ -62,7 +64,7 @@ class ScoreBoardServiceImplTest {
         assertThat(savedGame.getScore().homeTeamScore()).isEqualTo(0);
         assertThat(savedGame.getScore().awayTeamScore()).isEqualTo(0);
         assertThat(savedGame.getCreatedAt()).isEqualTo(Instant.MIN);
-        assertThat(result).isEqualTo(savedGame);
+        assertThat(result).isEqualTo(gameFromRepository);
     }
 
     @ParameterizedTest
@@ -118,8 +120,10 @@ class ScoreBoardServiceImplTest {
                 .id(gameId)
                 .score(new Score(0, 0))
                 .build();
+        var gameFromRepository = Game.builder().build();
         var newScore = new Score(1, 0);
         when(gameRepository.findById(gameId)).thenReturn(Optional.of(gameToUpdate));
+        when(gameRepository.save(gameToUpdate)).thenReturn(gameFromRepository);
 
         //when
         var result = sut.updateScore(gameId, newScore);
@@ -130,7 +134,7 @@ class ScoreBoardServiceImplTest {
         var updatedGameScore = updatedGame.getScore();
         assertThat(updatedGameScore.homeTeamScore()).isEqualTo(1);
         assertThat(updatedGameScore.awayTeamScore()).isEqualTo(0);
-        assertThat(result).isEqualTo(updatedGame);
+        assertThat(result).isEqualTo(gameFromRepository);
     }
 
     @Test

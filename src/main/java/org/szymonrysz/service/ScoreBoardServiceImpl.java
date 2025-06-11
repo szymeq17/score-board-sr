@@ -34,9 +34,7 @@ public class ScoreBoardServiceImpl implements ScoreBoardService {
                 .createdAt(Instant.now(clock))
                 .build();
 
-        gameRepository.save(game);
-
-        return game;
+        return gameRepository.save(game);
     }
 
     @Override
@@ -50,9 +48,8 @@ public class ScoreBoardServiceImpl implements ScoreBoardService {
         var game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new GameNotFoundException(gameId));
         game.setScore(score);
-        gameRepository.save(game);
 
-        return game;
+        return gameRepository.save(game);
     }
 
     @Override
@@ -87,7 +84,7 @@ public class ScoreBoardServiceImpl implements ScoreBoardService {
         }
 
         if (homeTeam.equals(awayTeam)) {
-            throw new GameRulesViolationException("Team cannot play against to itself.");
+            throw new GameRulesViolationException("Team cannot play against itself.");
         }
 
         if (isTeamAlreadyPlaying(homeTeam) || isTeamAlreadyPlaying(awayTeam)) {
