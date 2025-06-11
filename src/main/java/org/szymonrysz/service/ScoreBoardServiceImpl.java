@@ -57,9 +57,8 @@ public class ScoreBoardServiceImpl implements ScoreBoardService {
     public List<Game> getSummary() {
         return gameRepository.findAll()
                 .sorted(
-                        Comparator.comparing(
-                                        (Game game) -> game.getScore().homeTeamScore() + game.getScore().awayTeamScore()
-                                ).reversed()
+                        Comparator.comparing(Game::getTotalScore)
+                                .reversed()
                                 .thenComparing(Game::getCreatedAt)
                 )
                 .toList();

@@ -16,5 +16,9 @@ public class Game {
     private Team awayTeam;
     private Score score;
     private Instant createdAt;
+
+    public int getTotalScore() {
+        return score.homeTeamScore() + score.awayTeamScore();
+    }
 }
 
