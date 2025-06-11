@@ -193,7 +193,9 @@ class ScoreBoardServiceImplTest {
         return Stream.of(
                 Arguments.of(new Team("Poland"), null),
                 Arguments.of(null, new Team("Poland")),
-                Arguments.of(new Team("Poland"), new Team("Poland"))
+                Arguments.of(new Team("Poland"), new Team("Poland")),
+                Arguments.of(new Team(""), new Team("Poland")),
+                Arguments.of(new Team("Poland"), new Team(""))
         );
     }
 }

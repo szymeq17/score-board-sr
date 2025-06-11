@@ -76,12 +76,12 @@ public class ScoreBoardServiceImpl implements ScoreBoardService {
     }
 
     private void validateTeams(Team homeTeam, Team awayTeam) {
-        if (homeTeam == null) {
-            throw new GameRulesViolationException("Home team cannot be null.");
+        if (homeTeam == null || homeTeam.name().isBlank()) {
+            throw new GameRulesViolationException("Home team cannot be null nor blank.");
         }
 
-        if (awayTeam == null) {
-            throw new GameRulesViolationException("Away team cannot be null.");
+        if (awayTeam == null || awayTeam.name().isBlank()) {
+            throw new GameRulesViolationException("Away team cannot be null nor blank.");
         }
 
         if (homeTeam.equals(awayTeam)) {
