@@ -1,8 +1,6 @@
 # Assumptions
 
-The method that starts a game returns a `Game` object along with its ID.
-Updating the score and finishing the game are performed using the ID.
-
-The summary is returned as a properly sorted list containing `Game` objects with the required information.
-
-Since this was intended to be a simple library rather than a REST API, I did not create Data Transfer Objects.
+1. A team can play only one game at a time.
+2. Score must be a non-negative number.
+3. Team cannot play against itself.
+4. Team name cannot be null nor blank.
