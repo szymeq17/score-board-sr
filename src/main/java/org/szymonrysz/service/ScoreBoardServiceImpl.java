@@ -1,10 +1,12 @@
 package org.szymonrysz.service;
 
+import org.szymonrysz.converter.GameConverter;
 import org.szymonrysz.exception.GameNotFoundException;
 import org.szymonrysz.exception.GameRulesViolationException;
 import org.szymonrysz.model.Game;
 import org.szymonrysz.model.Score;
 import org.szymonrysz.model.Team;
+import org.szymonrysz.model.dto.GameDto;
 import org.szymonrysz.repository.GameRepository;
 
 import java.time.Clock;
@@ -17,14 +19,16 @@ public class ScoreBoardServiceImpl implements ScoreBoardService {
 
     private final GameRepository gameRepository;
     private final Clock clock;
+    private final GameConverter gameConverter;
 
-    public ScoreBoardServiceImpl(GameRepository gameRepository, Clock clock) {
+    public ScoreBoardServiceImpl(GameRepository gameRepository, Clock clock, GameConverter gameConverter) {
         this.gameRepository = gameRepository;
         this.clock = clock;
+        this.gameConverter = gameConverter;
     }
 
     @Override
-    public Game startGame(Team homeTeam, Team awayTeam) {
+    public GameDto startGame(Team homeTeam, Team awayTeam) {
         validateTeams(homeTeam, awayTeam);
 
         var game = Game.builder()
@@ -34,7 +38,8 @@ public class ScoreBoardServiceImpl implements ScoreBoardService {
                 .createdAt(Instant.now(clock))
                 .build();
 
-        return gameRepository.save(game);
+        var savedGame = gameRepository.save(game);
+        return gameConverter.toDto(savedGame);
     }
 
     @Override
@@ -44,23 +49,25 @@ public class ScoreBoardServiceImpl implements ScoreBoardService {
     }
 
     @Override
-    public Game updateScore(UUID gameId, Score score) {
+    public GameDto updateScore(UUID gameId, Score score) {
         validateScore(score);
         var game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new GameNotFoundException(gameId));
         game.setScore(score);
 
-        return gameRepository.save(game);
+        var savedGame = gameRepository.save(game);
+        return gameConverter.toDto(savedGame);
     }
 
     @Override
-    public List<Game> getSummary() {
+    public List<GameDto> getSummary() {
         return gameRepository.findAll()
                 .sorted(
                         Comparator.comparing(Game::getTotalScore)
                                 .reversed()
                                 .thenComparing(Game::getCreatedAt)
                 )
+                .map(gameConverter::toDto)
                 .toList();
     }
 

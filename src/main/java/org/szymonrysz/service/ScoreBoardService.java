@@ -1,18 +1,18 @@
 package org.szymonrysz.service;
 
-import org.szymonrysz.model.Game;
 import org.szymonrysz.model.Score;
 import org.szymonrysz.model.Team;
+import org.szymonrysz.model.dto.GameDto;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ScoreBoardService {
-    Game startGame(Team homeTeam, Team awayTeam);
+    GameDto startGame(Team homeTeam, Team awayTeam);
 
     void finishGame(UUID gameId);
 
-    Game updateScore(UUID gameId, Score score);
+    GameDto updateScore(UUID gameId, Score score);
 
-    List<Game> getSummary();
+    List<GameDto> getSummary();
 }

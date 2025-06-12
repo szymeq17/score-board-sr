@@ -10,11 +10,13 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.szymonrysz.converter.GameConverter;
 import org.szymonrysz.exception.GameNotFoundException;
 import org.szymonrysz.exception.GameRulesViolationException;
 import org.szymonrysz.model.Game;
 import org.szymonrysz.model.Score;
 import org.szymonrysz.model.Team;
+import org.szymonrysz.model.dto.GameDto;
 import org.szymonrysz.repository.GameRepository;
 
 import java.time.Clock;
@@ -36,6 +38,9 @@ class ScoreBoardServiceImplTest {
     @Mock
     private Clock clock;
 
+    @Mock
+    private GameConverter gameConverter;
+
     @InjectMocks
     private ScoreBoardServiceImpl sut;
 
@@ -48,10 +53,12 @@ class ScoreBoardServiceImplTest {
         var homeTeam = new Team("Poland");
         var awayTeam = new Team("Germany");
         var gameFromRepository = Game.builder().build();
+        var gameDto = mockGameDto();
         when(clock.instant()).thenReturn(Instant.MIN);
         when(gameRepository.existsByTeamName("Poland")).thenReturn(false);
         when(gameRepository.existsByTeamName("Germany")).thenReturn(false);
         when(gameRepository.save(any(Game.class))).thenReturn(gameFromRepository);
+        when(gameConverter.toDto(gameFromRepository)).thenReturn(gameDto);
 
         //when
         var result = sut.startGame(homeTeam, awayTeam);
@@ -64,7 +71,7 @@ class ScoreBoardServiceImplTest {
         assertThat(savedGame.getScore().homeTeamScore()).isEqualTo(0);
         assertThat(savedGame.getScore().awayTeamScore()).isEqualTo(0);
         assertThat(savedGame.getCreatedAt()).isEqualTo(Instant.MIN);
-        assertThat(result).isEqualTo(gameFromRepository);
+        assertThat(result).isEqualTo(gameDto);
     }
 
     @ParameterizedTest
@@ -117,7 +124,7 @@ class ScoreBoardServiceImplTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFinishigANonExistingGame() {
+    void shouldThrowExceptionWhenFinishingANonExistingGame() {
         //given
         var gameId = UUID.randomUUID();
         when(gameRepository.findById(gameId)).thenReturn(Optional.empty());
@@ -136,9 +143,11 @@ class ScoreBoardServiceImplTest {
                 .score(new Score(0, 0))
                 .build();
         var gameFromRepository = Game.builder().build();
+        var gameDto = mockGameDto();
         var newScore = new Score(1, 0);
         when(gameRepository.findById(gameId)).thenReturn(Optional.of(gameToUpdate));
         when(gameRepository.save(gameToUpdate)).thenReturn(gameFromRepository);
+        when(gameConverter.toDto(gameFromRepository)).thenReturn(gameDto);
 
         //when
         var result = sut.updateScore(gameId, newScore);
@@ -149,7 +158,7 @@ class ScoreBoardServiceImplTest {
         var updatedGameScore = updatedGame.getScore();
         assertThat(updatedGameScore.homeTeamScore()).isEqualTo(1);
         assertThat(updatedGameScore.awayTeamScore()).isEqualTo(0);
-        assertThat(result).isEqualTo(gameFromRepository);
+        assertThat(result).isEqualTo(gameDto);
     }
 
     @Test
@@ -182,25 +191,33 @@ class ScoreBoardServiceImplTest {
                 .score(new Score(1, 1))
                 .createdAt(Instant.MIN)
                 .build();
+        var gameDto1 = mockGameDto();
         var game2 = Game.builder()
                 .score(new Score(1, 2))
                 .createdAt(Instant.MAX)
                 .build();
+        var gameDto2 = mockGameDto();
         var game3 = Game.builder()
                 .score(new Score(1, 2))
                 .createdAt(Instant.MIN)
                 .build();
+        var gameDto3 = mockGameDto();
         var game4 = Game.builder()
                 .score(new Score(3, 3))
                 .createdAt(Instant.MAX)
                 .build();
+        var gameDto4 = mockGameDto();
         when(gameRepository.findAll()).thenReturn(Stream.of(game1, game2, game3, game4));
+        when(gameConverter.toDto(game1)).thenReturn(gameDto1);
+        when(gameConverter.toDto(game2)).thenReturn(gameDto2);
+        when(gameConverter.toDto(game3)).thenReturn(gameDto3);
+        when(gameConverter.toDto(game4)).thenReturn(gameDto4);
 
         //when
         var result = sut.getSummary();
 
         //then
-        assertThat(result).containsExactly(game4, game3, game2, game1);
+        assertThat(result).containsExactly(gameDto4, gameDto3, gameDto2, gameDto1);
     }
 
     private static Stream<Arguments> provideIncorrectTeams() {
@@ -218,6 +235,16 @@ class ScoreBoardServiceImplTest {
                 Arguments.of(new Score(-2, 0)),
                 Arguments.of(new Score(0, -1)),
                 Arguments.of(new Score(-5, -3))
+        );
+    }
+
+    private static GameDto mockGameDto() {
+        return new GameDto(
+                UUID.randomUUID(),
+                new Team("Poland"),
+                new Team("Germany"),
+                new Score(1, 0),
+                Instant.MIN
         );
     }
 }
