@@ -82,11 +82,11 @@ public class ScoreBoardServiceImpl implements ScoreBoardService {
     }
 
     private void validateTeams(Team homeTeam, Team awayTeam) {
-        if (homeTeam == null || homeTeam.name().isBlank()) {
+        if (isTeamInvalid(homeTeam)) {
             throw new GameRulesViolationException("Home team cannot be null nor blank.");
         }
 
-        if (awayTeam == null || awayTeam.name().isBlank()) {
+        if (isTeamInvalid(awayTeam)) {
             throw new GameRulesViolationException("Away team cannot be null nor blank.");
         }
 
@@ -98,6 +98,10 @@ public class ScoreBoardServiceImpl implements ScoreBoardService {
             throw new GameRulesViolationException("The team must be available (not currently playing)" +
                     " to start the game.");
         }
+    }
+
+    private boolean isTeamInvalid(Team team) {
+        return team == null || team.name() == null || team.name().isBlank();
     }
 
     private boolean isTeamAlreadyPlaying(Team team) {
