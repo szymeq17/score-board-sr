@@ -1,6 +1,5 @@
 package org.szymonrysz.service;
 
-import org.apache.commons.lang3.StringUtils;
 import org.szymonrysz.converter.GameConverter;
 import org.szymonrysz.exception.GameNotFoundException;
 import org.szymonrysz.exception.GameRulesViolationException;
@@ -83,11 +82,11 @@ public class ScoreBoardServiceImpl implements ScoreBoardService {
     }
 
     private void validateTeams(Team homeTeam, Team awayTeam) {
-        if (homeTeam == null || StringUtils.isBlank(homeTeam.name())) {
+        if (homeTeam == null || homeTeam.name().isBlank()) {
             throw new GameRulesViolationException("Home team cannot be null nor blank.");
         }
 
-        if (awayTeam == null || StringUtils.isBlank(awayTeam.name())) {
+        if (awayTeam == null || awayTeam.name().isBlank()) {
             throw new GameRulesViolationException("Away team cannot be null nor blank.");
         }
 
