@@ -1,14 +1,14 @@
 package org.szymonrysz.model;
 
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
 @Builder
 public class Game {
     private UUID id;
