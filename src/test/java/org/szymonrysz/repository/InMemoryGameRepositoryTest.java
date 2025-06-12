@@ -15,8 +15,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,7 +36,7 @@ class InMemoryGameRepositoryTest {
         var result = sut.save(gameToSave);
 
         //then
-        verify(gamesMap).put(any(), eq(gameToSave));
+        verify(gamesMap).put(gameToSave.getId(), gameToSave);
         verifyNoMoreInteractions(gamesMap);
         assertThat(result).isEqualTo(gameToSave);
         assertThat(result.getId()).isNotNull();
@@ -113,7 +111,7 @@ class InMemoryGameRepositoryTest {
         assertThat(games).containsAll(savedGames);
     }
 
-    private Game mockGame() {
+    private static Game mockGame() {
         return Game.builder()
                 .id(UUID.randomUUID())
                 .score(new Score(0, 0))

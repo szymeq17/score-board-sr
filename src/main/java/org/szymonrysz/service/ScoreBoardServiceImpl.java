@@ -71,7 +71,7 @@ public class ScoreBoardServiceImpl implements ScoreBoardService {
                 .toList();
     }
 
-    private void validateScore(Score score) {
+    private static void validateScore(Score score) {
         if (score.homeTeamScore() < 0) {
             throw new GameRulesViolationException("Home team score must be non-negative.");
         }
@@ -100,7 +100,7 @@ public class ScoreBoardServiceImpl implements ScoreBoardService {
         }
     }
 
-    private boolean isTeamInvalid(Team team) {
+    private static boolean isTeamInvalid(Team team) {
         return team == null || team.name() == null || team.name().isBlank();
     }
 

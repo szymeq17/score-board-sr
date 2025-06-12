@@ -191,22 +191,42 @@ class ScoreBoardServiceImplTest {
                 .score(new Score(1, 1))
                 .createdAt(Instant.MIN)
                 .build();
-        var gameDto1 = mockGameDto();
+        var gameDto1 = new GameDto(
+                UUID.randomUUID(),
+                new Team("Poland"),
+                new Team("Germany"),
+                game1.getScore(),
+                game1.getCreatedAt());
         var game2 = Game.builder()
                 .score(new Score(1, 2))
                 .createdAt(Instant.MAX)
                 .build();
-        var gameDto2 = mockGameDto();
+        var gameDto2 = new GameDto(
+                UUID.randomUUID(),
+                new Team("France"),
+                new Team("England"),
+                game2.getScore(),
+                game2.getCreatedAt());
         var game3 = Game.builder()
                 .score(new Score(1, 2))
                 .createdAt(Instant.MIN)
                 .build();
-        var gameDto3 = mockGameDto();
+        var gameDto3 = new GameDto(
+                UUID.randomUUID(),
+                new Team("Spain"),
+                new Team("Portugal"),
+                game3.getScore(),
+                game3.getCreatedAt());
         var game4 = Game.builder()
                 .score(new Score(3, 3))
                 .createdAt(Instant.MAX)
                 .build();
-        var gameDto4 = mockGameDto();
+        var gameDto4 = new GameDto(
+                UUID.randomUUID(),
+                new Team("Austria"),
+                new Team("Denmark"),
+                game4.getScore(),
+                game4.getCreatedAt());
         when(gameRepository.findAll()).thenReturn(Stream.of(game1, game2, game3, game4));
         when(gameConverter.toDto(game1)).thenReturn(gameDto1);
         when(gameConverter.toDto(game2)).thenReturn(gameDto2);
